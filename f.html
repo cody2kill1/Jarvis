@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Jarvis AI</title>
+</head>
+<body>
+    <h1>Jarvis AI</h1>
+    <p id="output">Ask Jarvis to do something</p>
+    <button id="startButton">Start Listening</button>
+    
+    <script>
+        const startButton = document.getElementById('startButton');
+        const output = document.getElementById('output');
+        const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+        
+        recognition.lang = 'en-US';
+        let listening = false;
+
+        startButton.addEventListener('click', () => {
+            if (listening) {
+                recognition.stop();
+                startButton.innerText = 'Start Listening';
+            } else {
+                recognition.start();
+                startButton.innerText = 'Stop Listening';
+            }
+            listening = !listening;
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            output.textContent = transcript;
+            
+            if (transcript.toLowerCase().includes("open netflix")) {
+                window.open("https://www.netflix.com", "_blank");
+                respond("Opening Netflix.");
+            } else if (transcript.toLowerCase().includes("open youtube")) {
+                window.open("https://www.youtube.com", "_blank");
+                respond("Opening YouTube.");
+            } else if (transcript.toLowerCase().includes("open forge")) {
+                window.open("https://www.curseforge.com", "_blank");
+                respond("Opening CurseForge.");
+            } else if (transcript.toLowerCase().includes("open word")) {
+                window.open("https://www.office.com", "_blank");
+                respond("Opening Microsoft Word.");
+            } else if (transcript.toLowerCase().includes("open hulu")) {
+                window.open("https://www.hulu.com", "_blank");
+                respond("Opening Hulu.");
+            } else if (transcript.toLowerCase().includes("open time for learning")) {
+                window.open("https://www.time4learning.com/Login/SingleLogin/StudentLogin.aspx", "_blank");
+                respond("Opening Time4Learning.");
+            }else if (transcript.toLowerCase().includes("open music")) {
+                    window.open("https://music.youtube.com/", "_blank");
+                    respond("Opening YouTube Music.");
+            } else if (transcript.toLowerCase().includes("search for")) {
+                const searchQuery = transcript.toLowerCase().replace("search for", "").trim();
+                const searchURL = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+                window.open(searchURL, "_blank");
+                respond(`Searching for "${searchQuery}"`);
+            } else {
+                respond("I'm sorry, I don't understand that command.");
+            }
+        };
+        
+        recognition.onend = () => {
+            if (listening) {
+                recognition.start();
+            }
+        };
+        
+        function respond(text) {
+            output.textContent = text;
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            synth.speak(utterance);
+        }
+    </script>
+</body>
+</html>
